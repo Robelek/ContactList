@@ -1,4 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ContactListAPI.Models;
+using ContactListAPI.Models.DTO;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace ContactListAPI.Controllers
@@ -7,36 +11,122 @@ namespace ContactListAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        // GET: api/<ValuesController>
+        private readonly ApplicationDbContext dbContext;
+
+        public UsersController(ApplicationDbContext _dbContext)
+        {
+            dbContext = _dbContext;
+        }
+
+        [HttpPost()]
+        public async Task<IActionResult> AddNewUser([FromBody] ContactDataRegisterDTO contactDataDTO)
+        {
+            try
+            {
+
+                var emailAlreadyExists = await dbContext.Users.AnyAsync(user => user.Email == contactDataDTO.Email);
+                if (emailAlreadyExists)
+                {
+                    return BadRequest("This email is already in use.");
+                }
+
+                var newUser = new ContactData
+                {
+                    ID = Guid.NewGuid(),
+                    FirstName = contactDataDTO.FirstName,
+                    LastName = contactDataDTO.LastName,
+                    Email = contactDataDTO.Email,
+                    PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(contactDataDTO.Password),
+                    Category = contactDataDTO.Category,
+                    SubCategory = contactDataDTO.SubCategory,
+                    PhoneNumber = contactDataDTO.PhoneNumber,
+                    DateOfBirth = contactDataDTO.DateOfBirth,
+
+                };
+
+                await dbContext.Users.AddAsync(newUser);
+                await dbContext.SaveChangesAsync();
+                return Ok(newUser);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+          
+
+        }
+
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> GetAllUsers()
         {
-            return new string[] { "value1", "value2" };
+            try
+            {
+                var allUsers = await dbContext.Users.ToListAsync();
+
+                if(allUsers == null)
+                {
+                    return NotFound("No users exist");
+                }
+
+                return Ok(allUsers);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
-        // GET api/<ValuesController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> GetUserByID(Guid id)
         {
-            return "value";
+            try
+            {
+                var thatUser = await dbContext.Users.FindAsync(id);
+
+                if (thatUser == null)
+                {
+                    return NotFound("User with that ID doesn't exist");
+                }
+
+               
+
+
+                return Ok(thatUser.toContactDataDTO());
+
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
-        // POST api/<ValuesController>
-        [HttpPost]
-        public void Post([FromBody] string value)
-        {
-        }
 
-        // PUT api/<ValuesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<ValuesController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> DeleteUserByID(Guid id)
         {
+ 
+            try
+            {
+                var thatUser = await dbContext.Users.FindAsync(id);
+
+                if (thatUser == null)
+                {
+                    return NotFound("User with that ID doesn't exist");
+                }
+
+                dbContext.Remove(thatUser);
+                await dbContext.SaveChangesAsync();
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+           
         }
+
+
+
     }
 }
