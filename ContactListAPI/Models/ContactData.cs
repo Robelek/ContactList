@@ -48,5 +48,17 @@ namespace ContactListAPI.Models
             return contactDataDTO; 
         }
 
+        public void updateFieldsToMatchDTO(ContactDataDTO contactDataDTO)
+        {
+            this.FirstName = contactDataDTO.FirstName;
+            this.LastName = contactDataDTO.LastName;
+            this.Email = contactDataDTO.Email;
+            this.Category = contactDataDTO.Category;
+            this.SubCategory = contactDataDTO.SubCategory;
+            this.PhoneNumber = contactDataDTO.PhoneNumber;
+            this.DateOfBirth = contactDataDTO.DateOfBirth;
+
+        }
+
     }
 }

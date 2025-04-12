@@ -126,6 +126,33 @@ namespace ContactListAPI.Controllers
            
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUserByID(Guid id, [FromBody] ContactDataDTO updatedUser)
+        {
+
+            try
+            {
+                var thatUser = await dbContext.Users.FindAsync(id);
+
+                if (thatUser == null)
+                {
+                    return NotFound("User with that ID doesn't exist");
+                }
+
+                thatUser.updateFieldsToMatchDTO(updatedUser);
+
+            
+                await dbContext.SaveChangesAsync();
+
+                return Ok(thatUser.toContactDataDTO());
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
 
 
     }
