@@ -3,7 +3,13 @@ using ContactListAPI.Models.DTO;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using Microsoft.Extensions.Logging;
+using System.Collections;
 
 namespace ContactListAPI.Controllers
 {
@@ -12,10 +18,19 @@ namespace ContactListAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ApplicationDbContext dbContext;
-
-        public UsersController(ApplicationDbContext _dbContext)
+        private readonly IConfiguration configuration;
+        private readonly ILogger<UsersController> logger;
+        private readonly JwtSettings jwtSettings;
+        public UsersController(
+            ApplicationDbContext _dbContext, 
+            IConfiguration _configuration,
+            ILogger<UsersController> _logger,
+            JwtSettings _jwtSettings)
         {
             dbContext = _dbContext;
+            configuration = _configuration;
+            logger = _logger;
+            jwtSettings = _jwtSettings;
         }
 
         [HttpPost()]
@@ -41,7 +56,7 @@ namespace ContactListAPI.Controllers
                     SubCategory = contactDataDTO.SubCategory,
                     PhoneNumber = contactDataDTO.PhoneNumber,
                     DateOfBirth = contactDataDTO.DateOfBirth,
-
+                    UserRole = Role.User,
                 };
 
                 await dbContext.Users.AddAsync(newUser);
@@ -68,7 +83,14 @@ namespace ContactListAPI.Controllers
                     return NotFound("No users exist");
                 }
 
-                return Ok(allUsers);
+                var userDataDtos = new ArrayList();
+
+                foreach(ContactData user in allUsers)
+                {
+                    userDataDtos.Add(user.toContactDataDTO());
+                }
+
+                return Ok(userDataDtos);
             }
             catch (Exception ex)
             {
@@ -153,7 +175,59 @@ namespace ContactListAPI.Controllers
 
         }
 
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginUser([FromBody] LoginDTO loginDTO)
+        {
+            try
+            {
+                //logger.LogInformation(loginDTO.Email);
+                var userData = await dbContext.Users.FirstAsync(user => user.Email == loginDTO.Email);
+
+                if(userData == null)
+                {
+                    return NotFound("No user with that email");
+                }
+
+                var isPasswordCorrect = BCrypt.Net.BCrypt.EnhancedVerify(loginDTO.Password, userData.PasswordHash);
+                if (!isPasswordCorrect)
+                {
+                    return Unauthorized("Wrong password");
+                }
 
 
+                var token = GenerateJWTToken(loginDTO.Email, ((Role)userData.UserRole).ToString());
+
+                return Ok(new { token = token });
+
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        private string GenerateJWTToken(string email, string role)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim("role", role)
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: jwtSettings.Issuer,
+                audience: jwtSettings.Audience,
+                claims: claims,
+                expires: DateTime.UtcNow.AddHours(2),
+                signingCredentials: creds
+
+
+                );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
     }
 }

@@ -13,6 +13,13 @@ namespace ContactListAPI.Models
         Other
     }
 
+    public enum Role
+    {
+        User,
+        Admin
+    }
+
+
     [Index(nameof(Email), IsUnique = true)]
     [Index(nameof(ID), IsUnique = true)]
     public class ContactData
@@ -32,7 +39,8 @@ namespace ContactListAPI.Models
 
         public string PhoneNumber { get; set; }
         public DateTime DateOfBirth {  get; set; }
-       
+
+        public Role UserRole { get; set; } = Role.User;
 
         public ContactDataDTO toContactDataDTO()
         {
@@ -47,6 +55,7 @@ namespace ContactListAPI.Models
 
             return contactDataDTO; 
         }
+       
 
         public void updateFieldsToMatchDTO(ContactDataDTO contactDataDTO)
         {

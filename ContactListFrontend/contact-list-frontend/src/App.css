@@ -36,3 +36,42 @@
     transform: rotate(360deg);
   }
 }
+
+.contactList
+{
+  display:flex;
+  flex-direction: column;
+  gap:0.3rem;
+}
+
+.contactBrief
+{
+  display:flex;
+  
+}
+.contactBrief > div
+{
+  border: 0.1rem black solid;
+  padding:0.2rem;
+}
+
+.buttonLink
+{
+  display:block;
+  padding:0.5rem;
+  border: 0.1rem black solid;
+}
+
+nav
+{
+  display:flex;
+  justify-content: end;
+  flex-direction: row;
+  width:100%;
+
+  border: 0.1rem black solid;
+  gap:0.4rem;
+
+  align-items: center;
+}
+
