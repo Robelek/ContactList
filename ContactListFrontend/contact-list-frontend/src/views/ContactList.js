@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios, { HttpStatusCode } from 'axios';
 import ContactBrief from '../components/ContactBrief';
-import { jwtDecode } from 'jwt-decode';
-import { getTokenClaimData, isTokenExpired } from '../misc/TokenHandling';
+
 import NavBar from '../components/NavBar';
 
 function ContactList() {
@@ -10,31 +9,21 @@ function ContactList() {
     const apiUrl = process.env.REACT_APP_API_URL;
 
     let [shouldRefresh, setShouldRefresh]= useState(1);
-
     const [userData, setUserData] = useState(null);
+    const [token, setToken] = useState(null);
 
-    const handleLogout = () => {
-        sessionStorage.removeItem("token");
+    function getUserData(userData)
+    {
+        setUserData(userData);
     }
 
+    function getToken()
+    {
+        setToken(token);
+    }
+  
+
     useEffect(() => {
-        let token = sessionStorage.getItem("token");
-
-        let requestHeaders = {};
-        if(isTokenExpired(token))
-        {
-            sessionStorage.removeItem("token");
-            console.log("Token expired");
-            setUserData(null);
-        }
-        else
-        {
-            requestHeaders['Authorization'] = `Bearer: ${token}`
-            let tokenData = getTokenClaimData(token);
-            console.log(`TokenData: ${tokenData}`)
-            setUserData(tokenData);
-        }
-
 
         if(apiUrl === undefined)
         {
@@ -42,6 +31,8 @@ function ContactList() {
         }
         else
         {
+            let requestHeaders = {};
+            requestHeaders['Authorization'] = `Bearer: ${token}`
             axios.get(`${apiUrl}/Users`,
                 {
                     headers: requestHeaders
@@ -78,7 +69,7 @@ function ContactList() {
     
     return (
         <div>
-            <NavBar userData={userData} handleLogout={handleLogout}></NavBar>
+            <NavBar passUserData={getUserData}></NavBar>
         <h1>
             Contact List
         </h1>
