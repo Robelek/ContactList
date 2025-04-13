@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import axios, { HttpStatusCode } from 'axios';
 import ContactBrief from '../components/ContactBrief';
 import { jwtDecode } from 'jwt-decode';
-import { getTokenClaimData, isTokenExpired } from '../miscFunctions/TokenHandling';
+import { getTokenClaimData, isTokenExpired } from '../misc/TokenHandling';
+import NavBar from '../components/NavBar';
 
 function ContactList() {
     const [contactBriefs, setContactBriefs] = useState([]);
@@ -77,38 +78,7 @@ function ContactList() {
     
     return (
         <div>
-            <nav>
-                {userData === null? (
-                    <>
-                        <a href="/login">
-                            <div className='buttonLink'> LOGIN </div>
-                        </a>
- 
-                        <a href="/register">
-                            <div className='buttonLink'> REGISTER </div>
-                        </a>
-                    </>
-                    )
-                    :
-                    (
-                    <>
-                        <div>
-                            <span>
-                            Logged in as {userData.email}
-                            </span>
-                            
-                        </div>
-                        <div>
-                            <a href="/">
-                                <div className='buttonLink' onClick={handleLogout}> logout </div>
-                            </a>
-                        </div>
-                    </>
-                    
-                    )
-                }
-               
-            </nav>
+            <NavBar userData={userData} handleLogout={handleLogout}></NavBar>
         <h1>
             Contact List
         </h1>

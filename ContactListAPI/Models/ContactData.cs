@@ -45,6 +45,7 @@ namespace ContactListAPI.Models
         public ContactDataDTO toContactDataDTO()
         {
             ContactDataDTO contactDataDTO = new ContactDataDTO();
+            contactDataDTO.ID = ID;
             contactDataDTO.FirstName = FirstName;
             contactDataDTO.LastName = LastName;
             contactDataDTO.Email = Email;
@@ -55,10 +56,22 @@ namespace ContactListAPI.Models
 
             return contactDataDTO; 
         }
-       
+
+        public ContactDataBriefDTO toContactDataBriefDTO()
+        {
+            ContactDataBriefDTO contactDataDTO = new ContactDataBriefDTO();
+            contactDataDTO.ID = ID;
+            contactDataDTO.Email = Email;
+            contactDataDTO.Category = Category;
+            contactDataDTO.SubCategory = SubCategory;
+          
+
+            return contactDataDTO;
+        }
 
         public void updateFieldsToMatchDTO(ContactDataDTO contactDataDTO)
         {
+            this.ID = contactDataDTO.ID;
             this.FirstName = contactDataDTO.FirstName;
             this.LastName = contactDataDTO.LastName;
             this.Email = contactDataDTO.Email;

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import axios, { HttpStatusCode } from 'axios';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { categories, workRoles } from '../../misc/CommonData';
 
 function Register(props) {
     const apiUrl = process.env.REACT_APP_API_URL;
     const navigate = useNavigate();
 
-    const categories = ['Work', 'Private', 'Other'];
-    const workRoles = ['Boss', 'Client', 'Administrator', 'HR', 'Developer', 'Manager', 'Intern', 'Support'];
+  
 
 
     const [formData, setFormData] = useState({

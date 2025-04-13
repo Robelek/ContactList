@@ -87,7 +87,7 @@ namespace ContactListAPI.Controllers
 
                 foreach(ContactData user in allUsers)
                 {
-                    userDataDtos.Add(user.toContactDataDTO());
+                    userDataDtos.Add(user.toContactDataBriefDTO());
                 }
 
                 return Ok(userDataDtos);
