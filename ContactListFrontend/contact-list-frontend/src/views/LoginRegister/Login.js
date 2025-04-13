@@ -61,14 +61,14 @@ function Login(props) {
                 <label htmlFor='email'>
                     Email
                 </label>
-                <input type="email" name="email" placeholder="test_email@domain.com" onChange={handleFormChange}/>
+                <input required type="email" name="email" placeholder="test_email@domain.com" onChange={handleFormChange}/>
             </div>
         
             <div>
                 <label htmlFor='password'>
                     Password
                 </label>
-                <input type="password" name="password" placeholder="" onChange={handleFormChange}/>
+                <input required type="password" name="password" placeholder="" onChange={handleFormChange}/>
             </div>
 
             <button type="submit">

@@ -75,3 +75,26 @@ nav
   align-items: center;
 }
 
+form > .radioHolder
+{
+  display:flex;
+  gap: 1.0rem;
+}
+
+form.loginRegisterForm
+{
+  display:flex;
+  flex-direction: column;
+  gap:0.4rem;
+}
+
+form.loginRegisterForm > button
+{
+  width:fit-content;
+  padding:0.2rem;
+}
+
+form.loginRegisterForm > div > *
+{
+ margin-right:0.5rem;
+}
