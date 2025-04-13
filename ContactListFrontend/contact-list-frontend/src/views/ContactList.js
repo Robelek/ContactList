@@ -17,9 +17,9 @@ function ContactList() {
         setUserData(userData);
     }
 
-    function getToken()
+    function getToken(_token)
     {
-        setToken(token);
+        setToken(_token);
     }
   
 
@@ -32,7 +32,7 @@ function ContactList() {
         else
         {
             let requestHeaders = {};
-            requestHeaders['Authorization'] = `Bearer: ${token}`
+            requestHeaders['Authorization'] = `Bearer ${token}`
             axios.get(`${apiUrl}/Users`,
                 {
                     headers: requestHeaders
@@ -69,7 +69,7 @@ function ContactList() {
     
     return (
         <div>
-            <NavBar passUserData={getUserData}></NavBar>
+            <NavBar passUserData={getUserData} getToken={getToken}></NavBar>
         <h1>
             Contact List
         </h1>

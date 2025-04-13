@@ -10,6 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.Extensions.Logging;
 using System.Collections;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ContactListAPI.Controllers
 {
@@ -98,12 +99,30 @@ namespace ContactListAPI.Controllers
             }
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserByID(Guid id)
         {
+            
             try
             {
+   
+                var userID = User.FindFirst("id")?.Value;
+                var userRoleFromClaim = User.FindFirst("role")?.Value;
+
+                if(!id.ToString().Equals(userID))
+                {
+                    logger.LogWarning("Access attempt without rights, ids: {0} {1}", userID, id.ToString());
+                    if(!userRoleFromClaim.Equals("Admin"))
+                    {
+                        return Unauthorized("You don't have rights to access this");
+                    }
+                }
+
                 var thatUser = await dbContext.Users.FindAsync(id);
+
+     
+
 
                 if (thatUser == null)
                 {
@@ -195,7 +214,7 @@ namespace ContactListAPI.Controllers
                 }
 
 
-                var token = GenerateJWTToken(loginDTO.Email, ((Role)userData.UserRole).ToString());
+                var token = GenerateJWTToken(userData.ID, ((Role)userData.UserRole).ToString());
 
                 return Ok(new { token = token });
 
@@ -206,14 +225,16 @@ namespace ContactListAPI.Controllers
             }
         }
 
-        private string GenerateJWTToken(string email, string role)
+        private string GenerateJWTToken(Guid id, string role)
         {
+            
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Email, email),
+                new Claim("id", id.ToString()),
                 new Claim("role", role)
             };
 

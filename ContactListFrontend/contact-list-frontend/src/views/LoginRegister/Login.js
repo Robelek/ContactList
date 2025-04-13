@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios, { HttpStatusCode } from 'axios';
 import { Navigate, useNavigate } from 'react-router-dom';
+import NavBar from '../../components/NavBar';
 
 function Login(props) {
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -52,6 +53,9 @@ function Login(props) {
 
     return (
         <div>
+            <NavBar>
+                
+            </NavBar>
         <h1> LOGIN PAGE</h1>
         
         <form className="loginRegisterForm" onSubmit={handleLogin} autoComplete='on'>

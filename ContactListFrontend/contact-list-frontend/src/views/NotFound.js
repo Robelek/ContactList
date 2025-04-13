@@ -1,10 +1,17 @@
+import NavBar from "../components/NavBar";
 
 function NotFound() {
     
     return (
-        <div>
+        <>
+        <NavBar>
+
+        </NavBar>
+          <div>
             Page with this address not found.
         </div>
+        </>
+      
     );
 }
 

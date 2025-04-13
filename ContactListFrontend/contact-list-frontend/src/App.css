@@ -98,3 +98,9 @@ form.loginRegisterForm > div > *
 {
  margin-right:0.5rem;
 }
+
+.moveToLeft
+{
+  margin-right: auto;
+  margin-left:0.5rem;
+}

@@ -5,34 +5,26 @@ import ContactBrief from '../components/ContactBrief';
 import { jwtDecode } from 'jwt-decode';
 import { getTokenClaimData, isTokenExpired } from '../misc/TokenHandling';
 import { useParams } from "react-router-dom";
+import NavBar from "../components/NavBar";
 
 function ContactDetails(props) {
     let [shouldRefresh, setShouldRefresh]= useState(1);
-    const [userData, setUserData] = useState(null);
+
     const [contactData, setContactData] = useState(null);
+    const [token, setToken] = useState(null);
+
+    function getToken(_token)
+    {
+        console.log(`ContactDetails.js - token ${_token}`)
+    
+        setToken(_token);
+    }
 
     const {id} = useParams();
 
     const apiUrl = process.env.REACT_APP_API_URL;
 
     useEffect(() => {
-        let token = sessionStorage.getItem("token");
-
-        let requestHeaders = {};
-        if(isTokenExpired(token))
-        {
-            sessionStorage.removeItem("token");
-            console.log("Token expired");
-            setUserData(null);
-        }
-        else
-        {
-            requestHeaders['Authorization'] = `Bearer: ${token}`
-            let tokenData = getTokenClaimData(token);
-            console.log(`TokenData: ${tokenData}`)
-            setUserData(tokenData);
-        }
-
 
         if(apiUrl === undefined)
         {
@@ -40,6 +32,9 @@ function ContactDetails(props) {
         }
         else
         {
+             let requestHeaders = {};
+            requestHeaders['Authorization'] = `Bearer ${token}`
+
             axios.get(`${apiUrl}/Users/${id}`,
                 {
                     headers: requestHeaders
@@ -53,24 +48,36 @@ function ContactDetails(props) {
                     setContactData(response.data);
                
                 }
-                else
+               
+            })
+            .catch(error => {
+                let res = error.response;
+                if(res.status == HttpStatusCode.Unauthorized)
+                    {
+                        setContactData("Unauthorized")
+                        console.error("Unauthorized");
+                    }
+                else if(res.status == HttpStatusCode.NotFound)
                 {
                     console.error("No contact data found in data");
                     setContactData([]);
                 }
-            })
-            .catch(error => {
-                console.error("Error when getting contact data", error);
+            
             })
         }
     
       
-    }, [id, shouldRefresh])
+    }, [id, shouldRefresh, token])
 
+   
 
     let details = (<div> No contact data found </div>);
   
-    if(contactData !== null)
+    if(contactData == "Unauthorized")
+    {
+        details = (<div>You do not have access to the details</div>)       
+    }
+    else if(contactData !== null)
     {
         let categoryName = categories.at(contactData.category);
         
@@ -115,7 +122,14 @@ function ContactDetails(props) {
    
     return (
         <>
+        <NavBar getToken={getToken}>
+
+        </NavBar>
+
+        <main>
         {details}
+        </main>
+        
         </>
        
     );

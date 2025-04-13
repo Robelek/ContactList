@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios, { HttpStatusCode } from 'axios';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { categories, workRoles } from '../../misc/CommonData';
+import NavBar from '../../components/NavBar';
 
 function Register(props) {
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -98,6 +99,10 @@ function Register(props) {
   
     return (
         <div>
+
+            <NavBar>
+
+            </NavBar>
         <h1> REGISTER PAGE</h1>
         
         <form className="loginRegisterForm" onSubmit={handleRegister} autoComplete='on'>
