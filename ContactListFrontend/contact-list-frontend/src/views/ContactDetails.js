@@ -75,17 +75,24 @@ function ContactDetails(props) {
   
     if(contactData == "Unauthorized")
     {
-        details = (<div>You do not have access to the details</div>)       
+        details = (<div>You must log in first.</div>)       
     }
     else if(contactData !== null)
     {
         let categoryName = categories.at(contactData.category);
-        
-        let dateOfBirthStamp = new Date(contactData.dateOfBirth);
-        //this splits a string that looks like this: 2025-04-12T15:16:08.678 by the time, and gets just the date
-        let dateOfBirth = dateOfBirthStamp.toISOString().split('T')[0];
+  
+        let dateOfBirth = contactData.dateOfBirth.split('T')[0];
+
+        let linkToEdit = `/edit/${id}`
 
         details = (<div className="contactBrief">
+            <a href={linkToEdit}>
+                <div className="buttonLink">
+                    Edit
+                </div>
+
+            </a>
+           
             <div>
                 {contactData.email}
             </div>

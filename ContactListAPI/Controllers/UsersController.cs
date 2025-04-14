@@ -101,36 +101,34 @@ namespace ContactListAPI.Controllers
 
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetUserByID(Guid id)
+        public async Task<IActionResult> GetUserByID(Guid id, [FromQuery] bool? forEdit)
         {
             
             try
             {
-   
-                var userID = User.FindFirst("id")?.Value;
-                var userRoleFromClaim = User.FindFirst("role")?.Value;
 
-                if(!id.ToString().Equals(userID))
+                if(forEdit == true)
                 {
-                    logger.LogWarning("Access attempt without rights, ids: {0} {1}", userID, id.ToString());
-                    if(!userRoleFromClaim.Equals("Admin"))
+                    var userID = User.FindFirst("id")?.Value;
+                    var userRoleFromClaim = User.FindFirst("role")?.Value;
+
+                    if (!id.ToString().Equals(userID))
                     {
-                        return Unauthorized("You don't have rights to access this");
+                        logger.LogWarning("Access attempt without rights, ids: {0} {1}", userID, id.ToString());
+                        if (!userRoleFromClaim.Equals("Admin"))
+                        {
+                            return Unauthorized("You don't have rights to access this");
+                        }
                     }
                 }
 
+
                 var thatUser = await dbContext.Users.FindAsync(id);
-
-     
-
 
                 if (thatUser == null)
                 {
                     return NotFound("User with that ID doesn't exist");
                 }
-
-               
-
 
                 return Ok(thatUser.toContactDataDTO());
 
@@ -141,13 +139,25 @@ namespace ContactListAPI.Controllers
             }
         }
 
-
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUserByID(Guid id)
         {
  
             try
             {
+                var userID = User.FindFirst("id")?.Value;
+                var userRoleFromClaim = User.FindFirst("role")?.Value;
+
+                if (!id.ToString().Equals(userID))
+                {
+                    logger.LogWarning("Access attempt without rights, ids: {0} {1}", userID, id.ToString());
+                    if (!userRoleFromClaim.Equals("Admin"))
+                    {
+                        return Unauthorized("You don't have rights to access this");
+                    }
+                }
+
                 var thatUser = await dbContext.Users.FindAsync(id);
 
                 if (thatUser == null)
@@ -167,12 +177,26 @@ namespace ContactListAPI.Controllers
            
         }
 
+        [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUserByID(Guid id, [FromBody] ContactDataDTO updatedUser)
+        public async Task<IActionResult> UpdateUserByID(Guid id, [FromBody] ContactDataRegisterDTO updatedUser)
         {
 
             try
             {
+
+                var userID = User.FindFirst("id")?.Value;
+                var userRoleFromClaim = User.FindFirst("role")?.Value;
+
+                if (!id.ToString().Equals(userID))
+                {
+                    logger.LogWarning("Access attempt without rights, ids: {0} {1}", userID, id.ToString());
+                    if (!userRoleFromClaim.Equals("Admin"))
+                    {
+                        return Unauthorized("You don't have rights to access this");
+                    }
+                }
+
                 var thatUser = await dbContext.Users.FindAsync(id);
 
                 if (thatUser == null)
@@ -181,8 +205,10 @@ namespace ContactListAPI.Controllers
                 }
 
                 thatUser.updateFieldsToMatchDTO(updatedUser);
+                thatUser.ID = id;
+                thatUser.PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(updatedUser.Password);
 
-            
+
                 await dbContext.SaveChangesAsync();
 
                 return Ok(thatUser.toContactDataDTO());
@@ -250,5 +276,8 @@ namespace ContactListAPI.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+
+        
     }
 }

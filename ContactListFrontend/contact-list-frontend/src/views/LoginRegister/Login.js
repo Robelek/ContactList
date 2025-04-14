@@ -38,16 +38,13 @@ function Login(props) {
                 console.log(token);
                 navigate('/');
             }
-            else
-            {
-                setError(
-                    <div> {response.data} </div>
-                )
-            }
+
         
 
         } catch (err) {
-           console.error("Error when trying to log in", err)
+            setError(
+                <div> {err.response.data} </div>
+            )
         }
     }
 

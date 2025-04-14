@@ -67,26 +67,14 @@ function Register(props) {
                     console.log(token);
                     navigate('/');
                 }
-                else
-                {
-                    setError(
-                        <div> Registering was successful, error when logging in: {loginResponse.data} </div>
-                    )
-                }
                 
-            }
-            else
-            {
-                setError(
-                    <div> Error when registering: {registerResponse.data} </div>
-                )
             }
         
 
         } catch (err) {
-           //console.error("Error when trying to register", err)
+          
            setError(
-            <div> Error when registering: {err.response.data} </div>
+            <div> Error: {err.response.data} </div>
         )
         }
     }
@@ -141,6 +129,13 @@ function Register(props) {
                     Phone number
                 </label>
                 <input type="tel" name="phoneNumber" placeholder="+48 123 456 789" pattern="^\+?[0-9\s\-]{7,15}$" onChange={handleFormChange}/>
+            </div>
+
+            <div>
+                <label htmlFor='dateOfBirth'>
+                    Date of birth:
+                </label>
+                <input type="date" name="dateOfBirth" onChange={handleFormChange}/>
             </div>
 
             <div className='radioHolder'>
