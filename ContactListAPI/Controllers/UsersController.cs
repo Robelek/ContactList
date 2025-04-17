@@ -46,6 +46,34 @@ namespace ContactListAPI.Controllers
                     return BadRequest("This email is already in use.");
                 }
 
+                var category = await dbContext.Category.FirstOrDefaultAsync(cat => cat.Name == contactDataDTO.Category);
+
+                if (category == null)
+                {
+                    
+                    category = new CategoryType
+                    {
+                        Name = contactDataDTO.Category
+                    };
+                    dbContext.Category.Add(category);
+                    await dbContext.SaveChangesAsync();  
+                }
+
+               
+                var subCategory = await dbContext.SubCategory.FirstOrDefaultAsync(sub => sub.Name == contactDataDTO.SubCategory);
+
+                if (subCategory == null)
+                {
+                    
+                    subCategory = new SubCategoryType
+                    {
+                        Name = contactDataDTO.SubCategory,
+                        CategoryId = category.Id     
+                    };
+                    dbContext.SubCategory.Add(subCategory);
+                    await dbContext.SaveChangesAsync();
+                }
+
                 var newUser = new ContactData
                 {
                     ID = Guid.NewGuid(),
@@ -53,8 +81,8 @@ namespace ContactListAPI.Controllers
                     LastName = contactDataDTO.LastName,
                     Email = contactDataDTO.Email,
                     PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(contactDataDTO.Password),
-                    Category = contactDataDTO.Category,
-                    SubCategory = contactDataDTO.SubCategory,
+                    Category = category,
+                    SubCategory = subCategory,
                     PhoneNumber = contactDataDTO.PhoneNumber,
                     DateOfBirth = contactDataDTO.DateOfBirth,
                     UserRole = Role.User,
@@ -165,7 +193,7 @@ namespace ContactListAPI.Controllers
                     return NotFound("User with that ID doesn't exist");
                 }
 
-                dbContext.Remove(thatUser);
+                dbContext.Users.Remove(thatUser);
                 await dbContext.SaveChangesAsync();
 
                 return Ok();
@@ -204,7 +232,37 @@ namespace ContactListAPI.Controllers
                     return NotFound("User with that ID doesn't exist");
                 }
 
-                thatUser.updateFieldsToMatchDTO(updatedUser);
+                var category = await dbContext.Category.FirstOrDefaultAsync(cat => cat.Name == updatedUser.Category);
+
+                if (category == null)
+                {
+
+                    category = new CategoryType
+                    {
+                        Name = updatedUser.Category
+                    };
+                    dbContext.Category.Add(category);
+                    await dbContext.SaveChangesAsync();
+                }
+
+
+                var subCategory = await dbContext.SubCategory.FirstOrDefaultAsync(sub => sub.Name == updatedUser.SubCategory);
+
+                if (subCategory == null)
+                {
+
+                    subCategory = new SubCategoryType
+                    {
+                        Name = updatedUser.SubCategory,
+                        CategoryId = category.Id
+                    };
+                    dbContext.SubCategory.Add(subCategory);
+                    await dbContext.SaveChangesAsync();
+                }
+
+
+                thatUser.updateFieldsToMatchDTO(updatedUser, category, subCategory);
+               
                 thatUser.ID = id;
                 thatUser.PasswordHash = BCrypt.Net.BCrypt.EnhancedHashPassword(updatedUser.Password);
 
