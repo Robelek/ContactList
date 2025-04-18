@@ -7,6 +7,7 @@ import Login from './views/LoginRegister/Login';
 import Register from './views/LoginRegister/Register';
 import ContactDetails from './views/ContactDetails';
 import ContactEdit from './views/ContactEdit';
+import UserAddView from './views/UserAddView';
 
 
 function App() {
@@ -16,9 +17,11 @@ function App() {
         <Route path="/" element={<ContactList/>} />
         <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Register/>} />
-
+        
         <Route path="/details/:id" element={<ContactDetails/>} />
         <Route path="/edit/:id" element={<ContactEdit/>} />
+        <Route path="/adduser" element={<UserAddView/>} />
+
 
 
         <Route path="*" element={<NotFound/>}/>

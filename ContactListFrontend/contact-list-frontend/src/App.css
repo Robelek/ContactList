@@ -43,6 +43,11 @@
   flex-direction: column;
   gap:0.3rem;
 }
+.contactList > a 
+{
+  width:fit-content;
+}
+
 
 .contactBrief
 {
@@ -54,6 +59,7 @@
   border: 0.1rem black solid;
   padding:0.2rem;
 }
+
 
 .buttonLink
 {

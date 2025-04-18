@@ -134,6 +134,10 @@ function ContactList() {
         )
     );
 
+    let addUserButton = ( <a href="/adduser">
+        <div className='buttonLink'> ADD NEW USER </div>    
+    </a>)
+   
     
     return (
         <div>
@@ -146,7 +150,9 @@ function ContactList() {
 
         <div className='contactList'>
             {contactsBriefComponents}
-            
+
+
+            {addUserButton}
         </div>
 
         </div>
