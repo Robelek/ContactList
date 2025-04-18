@@ -1,4 +1,5 @@
 ﻿using ContactListAPI.Models;
+using ContactListAPI.Models.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace ContactListAPI
@@ -17,6 +18,14 @@ namespace ContactListAPI
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<ContactData>()
+                .Navigation(c => c.Category)
+                .AutoInclude();
+
+            modelBuilder.Entity<ContactData>()
+                .Navigation(c => c.SubCategory)
+                .AutoInclude();
 
             modelBuilder.Entity<ContactData>()
             .HasOne(c => c.Category)
@@ -47,6 +56,9 @@ namespace ContactListAPI
                 new SubCategoryType { Id = 7, Name = "Intern", CategoryId = 1 },
                 new SubCategoryType { Id = 8, Name = "Support", CategoryId = 1 }
             );
+
+
+   
         }
     }
 }

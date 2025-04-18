@@ -37,6 +37,7 @@ function NavBar({passUserData, getToken})
             console.log(`TokenData: ${tokenData}`)
 
             setUserData(tokenData);
+        
             if(typeof(passUserData) === "function")
             {
                 passUserData(tokenData);

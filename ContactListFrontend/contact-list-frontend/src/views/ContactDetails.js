@@ -1,4 +1,3 @@
-import { categories } from "../misc/CommonData";
 import { useEffect, useState } from 'react';
 import axios, { HttpStatusCode } from 'axios';
 import ContactBrief from '../components/ContactBrief';
@@ -79,7 +78,7 @@ function ContactDetails(props) {
     }
     else if(contactData !== null)
     {
-        let categoryName = categories.at(contactData.category);
+        let categoryName = contactData.category;
   
         let dateOfBirth = contactData.dateOfBirth.split('T')[0];
 

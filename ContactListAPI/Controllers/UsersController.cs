@@ -90,7 +90,7 @@ namespace ContactListAPI.Controllers
 
                 await dbContext.Users.AddAsync(newUser);
                 await dbContext.SaveChangesAsync();
-                return Ok(newUser);
+                return Ok(newUser.toContactDataDTO());
             }
             catch(Exception ex)
             {
@@ -298,7 +298,7 @@ namespace ContactListAPI.Controllers
                 }
 
 
-                var token = GenerateJWTToken(userData.ID, ((Role)userData.UserRole).ToString());
+                var token = GenerateJWTToken(userData.ID, ((Role)userData.UserRole).ToString(), userData.Email);
 
                 return Ok(new { token = token });
 
@@ -309,7 +309,7 @@ namespace ContactListAPI.Controllers
             }
         }
 
-        private string GenerateJWTToken(Guid id, string role)
+        private string GenerateJWTToken(Guid id, string role, string email)
         {
             
 
@@ -319,6 +319,7 @@ namespace ContactListAPI.Controllers
             var claims = new[]
             {
                 new Claim("id", id.ToString()),
+                new Claim("email", email),
                 new Claim("role", role)
             };
 

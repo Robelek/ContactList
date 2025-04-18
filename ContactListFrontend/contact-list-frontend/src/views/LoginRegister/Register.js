@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
 import axios, { HttpStatusCode } from 'axios';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { categories, workRoles } from '../../misc/CommonData';
 import NavBar from '../../components/NavBar';
 
 function Register(props) {
     const apiUrl = process.env.REACT_APP_API_URL;
     const navigate = useNavigate();
 
-  
-
+    const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
 
     const [formData, setFormData] = useState({
         firstName: "",
@@ -48,7 +47,6 @@ function Register(props) {
             {
                 formDataCopy.subCategory = "";
             }
-            formDataCopy.category = categories.indexOf(formDataCopy.category);
             
 
             const registerResponse = await axios.post(`${apiUrl}/Users`, formDataCopy);
@@ -79,12 +77,73 @@ function Register(props) {
         }
     }
 
+    let [shouldRefresh, setShouldRefresh]= useState(1);
+    useEffect(() => {
+
+        if(apiUrl === undefined)
+        {
+            console.error("API_URL is undefined");
+        }
+        else
+        {
+           
+            axios.get(`${apiUrl}/Misc/categories`,
+            )
+            .then(response => {
+                console.log(response);
+                if(response.status == HttpStatusCode.Ok)
+                {
+                   console.log(response.data);
+                    setCategories(response.data);
+               
+                }
+            })
+            .catch(error => {
+                console.error("Error when getting categories", error);
+                setCategories([]);
+            })
+
+
+            axios.get(`${apiUrl}/Misc/subcategories`,
+            )
+            .then(response => {
+                console.log(response);
+                if(response.status == HttpStatusCode.Ok)
+                {
+                   console.log(response.data);
+                    setSubCategories(response.data);
+               
+                }
+            })
+            .catch(error => {
+                console.error("Error when getting subcategories", error);
+                setSubCategories([]);
+            })
+        }
     
-    // category: 0,
-    // subCategory: "",
-    // phoneNumber: "",
-    // dateOfBirth: new Date().toISOString(),
+      
+    }, [shouldRefresh])
   
+
+    
+
+    if (categories == [] || subCategories == [])
+    {
+        return <div>
+            <NavBar>
+
+            </NavBar>
+
+            <h1> REGISTER PAGE </h1>
+            <div>
+                Technical difficulties: couldn't obtain the categories.
+            </div>
+        </div>
+    }
+
+    let workCategory = categories.find(cat => cat.name == "Work");
+    let workRoles = subCategories.filter(subCat => subCat.categoryId === workCategory.id);
+
     return (
         <div>
 
@@ -141,11 +200,11 @@ function Register(props) {
             <div className='radioHolder'>
                 {
                 categories.map((category) => (
-                    <div key={category}>
-                         <label htmlFor={category}>
-                            {category}
+                    <div key={category.name}>
+                         <label htmlFor={category.name}>
+                            {category.name}
                         </label>
-                        <input type="radio" name="category" id={category} value={category.toLowerCase()} onChange={handleFormChange}/>
+                        <input type="radio" name="category" id={category.name} value={category.name.toLowerCase()} onChange={handleFormChange}/>
                     </div>
                 ))
                }
@@ -157,12 +216,12 @@ function Register(props) {
             {formData.category === "work" && (
                 <div className="radioHolder">
                         {
-                    workRoles.map((workRole) => (
-                        <div key={workRole}>
-                            <label htmlFor={workRole}>
-                                {workRole}
+                    subCategories.map((workRole) => (
+                        <div key={workRole.name}>
+                            <label htmlFor={workRole.name}>
+                                {workRole.name}
                             </label>
-                            <input type="radio" name="subCategory" id={workRole} value={workRole.toLowerCase()} onChange={handleFormChange}/>
+                            <input type="radio" name="subCategory" id={workRole.name} value={workRole.name.toLowerCase()} onChange={handleFormChange}/>
                         </div>
                     ))
                 }

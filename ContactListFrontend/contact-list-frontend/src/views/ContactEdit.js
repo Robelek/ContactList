@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios, { HttpStatusCode } from 'axios';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { categories, workRoles } from '../misc/CommonData';
 import { useParams } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 
@@ -170,10 +169,10 @@ function ContactEdit(props) {
     }, [id, shouldRefresh, token])
 
     
-    // category: 0,
-    // subCategory: "",
-    // phoneNumber: "",
-    // dateOfBirth: new Date().toISOString(),
+    //only for now fix later
+
+    let categories = [];
+    let workRoles = [];
 
     if(infoMessage != "")
     {

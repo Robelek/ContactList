@@ -12,9 +12,14 @@ function ContactList() {
     const [userData, setUserData] = useState(null);
     const [token, setToken] = useState(null);
 
+    const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
+
+
     function getUserData(userData)
     {
         setUserData(userData);
+        console.log(userData);
     }
 
     function getToken(_token)
@@ -54,6 +59,39 @@ function ContactList() {
             })
             .catch(error => {
                 console.error("Error when getting contacts", error);
+            })
+
+            axios.get(`${apiUrl}/Misc/categories`,
+            )
+            .then(response => {
+                console.log(response);
+                if(response.status == HttpStatusCode.Ok)
+                {
+                   console.log(response.data);
+                    setCategories(response.data);
+               
+                }
+            })
+            .catch(error => {
+                console.error("Error when getting categories", error);
+                setCategories([]);
+            })
+
+
+            axios.get(`${apiUrl}/Misc/subcategories`,
+            )
+            .then(response => {
+                console.log(response);
+                if(response.status == HttpStatusCode.Ok)
+                {
+                   console.log(response.data);
+                    setSubCategories(response.data);
+               
+                }
+            })
+            .catch(error => {
+                console.error("Error when getting subcategories", error);
+                setSubCategories([]);
             })
         }
     

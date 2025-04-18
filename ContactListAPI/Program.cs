@@ -84,4 +84,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+await StartupFunctions.SeedAdminAsync(app.Services);
+
 app.Run();

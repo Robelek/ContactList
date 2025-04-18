@@ -1,8 +1,6 @@
-import { categories } from "../misc/CommonData";
-
 function ContactBrief(props) {
     let contact = props.contact;
-    let categoryName = categories.at(contact.category);
+    console.log(contact);
     let link = `details/${contact.id}`;
     return (
         <div className="contactBrief">
@@ -17,16 +15,15 @@ function ContactBrief(props) {
             </div>
 
             <div>
-                {categoryName}
+                {contact.category}
             </div>
            
-            {
-                contact.category !== "Personal" && (
-                    <div>
-                        {contact.subCategory}
-                    </div>
-                ) 
-            }
+          
+            <div>
+                {contact.subCategory}
+            </div>
+            
+            
         </div>
     );
   }
