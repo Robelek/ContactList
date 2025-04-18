@@ -6,20 +6,29 @@ Descriptions of classes and methods are in the documentation folder.
 
 ## How to run?
 Simplest way:
-1. clone the repo
-2. in the contact-list-frontend folder, add a .env (.example_env shows what should be inside)
-3. in the ContactListAPI folder, add a .env (.example_env shows what should be inside)
-4. run runAll.bat
+<ol>
+    <li> clone the repo </li>
+    <li> in the contact-list-frontend folder, add a .env (.example_env shows what should be inside) </li>
+    <li> in the ContactListAPI folder, add a .env (.example_env shows what should be inside) </li>
+    <li> compile the backend (instructions below) in Release mode </li>
+    <li> run runAll.bat </li>
+
+</ol>
 
 
 ## How to compile
 ### Backend (using Visual Studio):
-1. open ContactListAPI.sln in the ContactListAPI folder
-2. press CTRL+SHIFT+B or right click the solution in explorer and choose build
+<ol>
+    <li> open ContactListAPI.sln in the ContactListAPI folder </li>
+    <li> press CTRL+SHIFT+B or right click the solution in explorer and choose build </li>
+</ol>
 
 ### Frontend
-1. open contact-list-frontend folder in a command line (or visual studio code)
-2. write ```npm run build``` 
+<ol>
+    <li> open contact-list-frontend folder in a command line (or Visual Studio Code)
+    <li> write ```npm run build``` </li> 
+</ol>
+
 
 
 
