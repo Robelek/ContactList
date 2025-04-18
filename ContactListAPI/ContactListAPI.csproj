@@ -24,6 +24,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="3.3.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+	  <None Update=".env">
+		  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+	  </None>
   </ItemGroup>
 
 </Project>

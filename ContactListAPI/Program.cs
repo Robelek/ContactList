@@ -15,6 +15,13 @@ var jwtKey = DotNetEnv.Env.GetString("JWT_KEY");
 var jwtIssuer = "ContactList";
 var jwtAudience = "ContactListUsers";
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenAnyIP(7080); 
+    serverOptions.ListenAnyIP(7081, listenOptions => listenOptions.UseHttps());
+});
+
+
 builder.Services.AddSingleton(new JwtSettings
 {
     Key = jwtKey,
@@ -58,7 +65,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowFrontendAccessDev",
         policy =>
         {
-            policy.WithOrigins("http://localhost:3000")
+            policy.WithOrigins(
+                "http://localhost:3000",
+                "https://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod();
         });
@@ -75,6 +84,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowFrontendAccessDev");
+
 
 app.UseHttpsRedirection();
 
