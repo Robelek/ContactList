@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios, { HttpStatusCode } from 'axios';
 import { Navigate, useNavigate } from 'react-router-dom';
 import NavBar from '../../components/NavBar';
+import LoginRegisterForm from './LoginRegisterForm';
 
 function Register(props) {
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -33,6 +34,7 @@ function Register(props) {
         )
 
     }
+
 
     let handleRegister = async (e) =>
     {
@@ -152,96 +154,14 @@ function Register(props) {
             </NavBar>
         <h1> REGISTER PAGE</h1>
         
-        <form className="loginRegisterForm" onSubmit={handleRegister} autoComplete='on'>
-            {error}
-
-            <div>
-                <label htmlFor='email'>
-                    Email
-                </label>
-                <input required type="email" name="email" placeholder="test_email@domain.com" onChange={handleFormChange}/>
-            </div>
-        
-            <div>
-                <label htmlFor='password'>
-                    Password
-                </label>
-                <input required type="password" name="password" placeholder="" onChange={handleFormChange}/>
-            </div>
-
-            <div>
-                <label htmlFor='firstName'>
-                    First name
-                </label>
-                <input name="firstName" placeholder="Jan" onChange={handleFormChange}/>
-            </div>
-
-            <div>
-                <label htmlFor='lastName'>
-                    Last name
-                </label>
-                <input name="lastName" placeholder="Kowalski" onChange={handleFormChange}/>
-            </div>
-
-            <div>
-                <label htmlFor='phoneNumber'>
-                    Phone number
-                </label>
-                <input type="tel" name="phoneNumber" placeholder="+48 123 456 789" pattern="^\+?[0-9\s\-]{7,15}$" onChange={handleFormChange}/>
-            </div>
-
-            <div>
-                <label htmlFor='dateOfBirth'>
-                    Date of birth:
-                </label>
-                <input type="date" name="dateOfBirth" onChange={handleFormChange}/>
-            </div>
-
-            <div className='radioHolder'>
-                {
-                categories.map((category) => (
-                    <div key={category.name}>
-                         <label htmlFor={category.name}>
-                            {category.name}
-                        </label>
-                        <input type="radio" name="category" id={category.name} value={category.name.toLowerCase()} onChange={handleFormChange}/>
-                    </div>
-                ))
-               }
-
-               
-            </div>
-         
-
-            {formData.category === "work" && (
-                <div className="radioHolder">
-                        {
-                    subCategories.map((workRole) => (
-                        <div key={workRole.name}>
-                            <label htmlFor={workRole.name}>
-                                {workRole.name}
-                            </label>
-                            <input type="radio" name="subCategory" id={workRole.name} value={workRole.name.toLowerCase()} onChange={handleFormChange}/>
-                        </div>
-                    ))
-                }
-                </div>
-            )}
-
-            {formData.category === "other" && (
-                <div>
-                     <label htmlFor='subCategory'>
-                    Subcategory
-                    </label>
-                    <input name="subCategory"  onChange={handleFormChange}/>
-                </div>
-            )}
-
-
-            <button type="submit">
-                REGISTER
-            </button>
-        </form>
+        <LoginRegisterForm 
+            handleFormChange={handleFormChange}
+            handleSubmit={handleRegister}
+            categories={categories}
+            subCategories={subCategories}
+            formData = {formData}
+            error = {error}
+        />
 
         </div>
     );

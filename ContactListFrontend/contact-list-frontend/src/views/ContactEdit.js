@@ -3,6 +3,7 @@ import axios, { HttpStatusCode } from 'axios';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import NavBar from '../components/NavBar';
+import LoginRegisterForm from './LoginRegister/LoginRegisterForm';
 
 function ContactEdit(props) {
     const apiUrl = process.env.REACT_APP_API_URL;
@@ -11,6 +12,9 @@ function ContactEdit(props) {
     const {id} = useParams();
     const [token, setToken] = useState(null);
     let [shouldRefresh, setShouldRefresh]= useState(1);
+    const [categories, setCategories] = useState([]);
+    const [subCategories, setSubCategories] = useState([]);
+
   
     const [infoMessage,setinfoMessage] = useState("");
 
@@ -53,7 +57,6 @@ function ContactEdit(props) {
             {
                 formDataCopy.subCategory = "";
             }
-            formDataCopy.category = categories.indexOf(formDataCopy.category);
             
             let requestHeaders = {};
             requestHeaders['Authorization'] = `Bearer ${token}`
@@ -133,7 +136,7 @@ function ContactEdit(props) {
                 newFormData.firstName = response.data.firstName;
                 newFormData.lastName = response.data.lastName;
                 newFormData.email = response.data.email;
-                newFormData.category = categories.at(response.data.category).toLowerCase();
+                newFormData.category = response.data.category.toLowerCase();
                 newFormData.subCategory = response.data.subCategory.toLowerCase();
                 newFormData.phoneNumber = response.data.phoneNumber;
                 newFormData.dateOfBirth = response.data.dateOfBirth;
@@ -149,6 +152,12 @@ function ContactEdit(props) {
                
             })
             .catch(error => {
+                if(error == undefined || error.response == undefined)
+                {
+                    console.log("error undefined");
+                    console.log(error);
+                }
+
                 let res = error.response;
                 if(res.status == HttpStatusCode.Unauthorized)
                     {
@@ -163,16 +172,49 @@ function ContactEdit(props) {
                 }
             
             })
+
+
+            axios.get(`${apiUrl}/Misc/categories`,
+            )
+            .then(response => {
+                console.log(response);
+                if(response.status == HttpStatusCode.Ok)
+                {
+                   console.log(response.data);
+                    setCategories(response.data);
+               
+                }
+            })
+            .catch(error => {
+                console.error("Error when getting categories", error);
+                setCategories([]);
+            })
+
+
+            axios.get(`${apiUrl}/Misc/subcategories`,
+            )
+            .then(response => {
+                console.log(response);
+                if(response.status == HttpStatusCode.Ok)
+                {
+                   console.log(response.data);
+                    setSubCategories(response.data);
+               
+                }
+            })
+            .catch(error => {
+                console.error("Error when getting subcategories", error);
+                setSubCategories([]);
+            })
+
+            
         }
     
       
     }, [id, shouldRefresh, token])
 
     
-    //only for now fix later
 
-    let categories = [];
-    let workRoles = [];
 
     if(infoMessage != "")
     {
@@ -198,96 +240,14 @@ function ContactEdit(props) {
             </NavBar>
         <h1> EDIT CONTACT PAGE</h1>
         
-        <form className="loginRegisterForm" onSubmit={handleEdit} autoComplete='on'>
-            {error}
-
-            <div>
-                <label htmlFor='email'>
-                    Email
-                </label>
-                <input required type="email" name="email" placeholder="test_email@domain.com" value={formData.email} onChange={handleFormChange}/>
-            </div>
-        
-            <div>
-                <label htmlFor='password'>
-                    Password
-                </label>
-                <input required type="password" name="password" placeholder="" onChange={handleFormChange}/>
-            </div>
-
-            <div>
-                <label htmlFor='firstName'>
-                    First name
-                </label>
-                <input name="firstName" placeholder="Jan" value={formData.firstName} onChange={handleFormChange}/>
-            </div>
-
-            <div>
-                <label htmlFor='lastName'>
-                    Last name
-                </label>
-                <input name="lastName" placeholder="Kowalski" value={formData.lastName} onChange={handleFormChange}/>
-            </div>
-
-            <div>
-                <label htmlFor='dateOfBirth'>
-                    Date of birth:
-                </label>
-                <input type="date" name="dateOfBirth" value={formData.dateOfBirth.split('T')[0]} onChange={handleFormChange}/>
-            </div>
-
-            <div>
-                <label htmlFor='phoneNumber'>
-                    Phone number
-                </label>
-                <input type="tel" name="phoneNumber" placeholder="+48 123 456 789" pattern="^\+?[0-9\s\-]{7,15}$" value={formData.phoneNumber} onChange={handleFormChange}/>
-            </div>
-
-            <div className='radioHolder'>
-                {
-                categories.map((category) => (
-                    <div key={category}>
-                         <label htmlFor={category}>
-                            {category}
-                        </label>
-                        <input type="radio" name="category" checked={category.toLowerCase() == formData.category.toLowerCase()} id={category} value={category.toLowerCase()} onChange={handleFormChange}/>
-                    </div>
-                ))
-               }
-
-               
-            </div>
-         
-
-            {formData.category === "work" && (
-                <div className="radioHolder">
-                        {
-                    workRoles.map((workRole) => (
-                        <div key={workRole}>
-                            <label htmlFor={workRole}>
-                                {workRole}
-                            </label>
-                            <input type="radio" name="subCategory" checked={formData.subCategory.toLowerCase() == workRole.toLowerCase()} id={workRole} value={workRole.toLowerCase()} onChange={handleFormChange}/>
-                        </div>
-                    ))
-                }
-                </div>
-            )}
-
-            {formData.category === "other" && (
-                <div>
-                     <label htmlFor='subCategory'>
-                    Subcategory
-                    </label>
-                    <input name="subCategory"  onChange={handleFormChange} value={formData.subCategory}/>
-                </div>
-            )}
-
-
-            <button type="submit">
-                REGISTER
-            </button>
-        </form>
+        <LoginRegisterForm 
+            handleFormChange={handleFormChange}
+            handleSubmit={handleEdit}
+            categories={categories}
+            subCategories={subCategories}
+            formData = {formData}
+            error = {error}
+        />
 
         </div>
     );
