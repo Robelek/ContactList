@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios, { HttpStatusCode } from 'axios';
 import ContactBrief from '../components/ContactBrief';
-
+import { Navigate, useNavigate } from 'react-router-dom';
 import NavBar from '../components/NavBar';
 
 function ContactList() {
@@ -15,6 +15,9 @@ function ContactList() {
     const [categories, setCategories] = useState([]);
     const [subCategories, setSubCategories] = useState([]);
 
+    const [errorMessage, setErrorMessage] = useState(<></>);
+
+    const navigate = useNavigate();
 
     function getUserData(userData)
     {
@@ -51,14 +54,10 @@ function ContactList() {
                     setContactBriefs(response.data);
                
                 }
-                else
-                {
-                    console.error("No contact briefs found in data");
-                    setContactBriefs([]);
-                }
             })
             .catch(error => {
                 console.error("Error when getting contacts", error);
+                setContactBriefs([]);
             })
 
             axios.get(`${apiUrl}/Misc/categories`,
@@ -98,9 +97,40 @@ function ContactList() {
       
     }, [shouldRefresh])
 
+    let handleDeleteContact = (id) => {
+        let requestHeaders = {};
+        requestHeaders['Authorization'] = `Bearer ${token}`
+        axios.delete(`${apiUrl}/Users/${id}`,
+            {
+                headers: requestHeaders
+            }
+        )
+        .then(response => {
+            console.log(response);
+            if(response.status == HttpStatusCode.Ok)
+            {
+
+                if(userData.role != "Admin")
+                {
+                    sessionStorage.removeItem("token");
+                    setToken(null);
+                }
+
+                window.location.reload();
+
+
+            }
+        })
+        .catch(error => {
+            console.error("Error when deleting", error);
+            setErrorMessage(error);
+        })
+
+    }
+
     let contactsBriefComponents = contactBriefs.map(thisContact => 
         (
-           <ContactBrief key={thisContact.email} contact={thisContact}/>
+           <ContactBrief key={thisContact.email} contact={thisContact} userData={userData} deleteHandleFunction={handleDeleteContact}/>
         )
     );
 
@@ -112,6 +142,8 @@ function ContactList() {
             Contact List
         </h1>
         
+        {errorMessage}
+
         <div className='contactList'>
             {contactsBriefComponents}
             

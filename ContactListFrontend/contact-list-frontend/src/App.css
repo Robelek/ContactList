@@ -62,6 +62,13 @@
   border: 0.1rem black solid;
 }
 
+.buttonLink.deleteButton
+{
+  cursor:pointer;
+  text-decoration: underline;
+  color:purple
+}
+
 nav
 {
   display:flex;

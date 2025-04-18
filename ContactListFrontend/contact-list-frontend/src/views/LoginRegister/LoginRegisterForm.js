@@ -7,7 +7,6 @@ function LoginRegisterForm(props)
     let formData = props.formData;
     let error = props.error;
 
-    let dateOfBirth
 
     return (
         <form className="loginRegisterForm" onSubmit={handleSubmit} autoComplete='on'>
